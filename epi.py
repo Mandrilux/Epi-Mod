@@ -38,9 +38,11 @@ def getFree(autologin, url):
         module = response.json()
         return (len(module))
 
-def getSpace(autologin, modules, free):
-    for module in modules:
-        base = autologin + "/module/2019/" + module[0]
+def getSpace(autologin, data, free):
+    for module in data['module']:
+        print(module)
+    #for module in modules:
+        base = autologin + "/module/2019/" +  module['codebase']
         urlfree = base + "/registered/?format=json"
         url = base + "/?format=json"
         try:
@@ -49,22 +51,23 @@ def getSpace(autologin, modules, free):
             print(f'Other error occurred: {err}')  # Python 3.6
         else:
             modulejson = response.json()
-            module.append(getFree(autologin, urlfree))
+            module["max_student"] = getFree(autologin, urlfree)
             maxValue = modulejson["max_ins"]
             if maxValue is None:
                 maxValue = 0
             else :
                 maxValue = int(maxValue)
-            module.append(maxValue)
+            module["max_student"] = maxValue
+            #module.append(maxValue)
 
             if free:
-                if module[3] <  module[4]:
+                if module["student"] <  module["max_student"]:
                     print(module)
             else:
                 print(module)
 
 def getModule(autologin):
-    moduleslist = []
+    #moduleslist = []
     data = {}
     data['module'] = []
     try:
@@ -105,7 +108,7 @@ def WritejsonModule(modules):
 
 def loadModule():
     with open('modules.json') as json_file:
-    data = json.load(json_file)
+        data = json.load(json_file)
     return data
 
 
