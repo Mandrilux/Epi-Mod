@@ -83,6 +83,7 @@ def getModule(autologin):
 
 
 def WritejsonModule(modules):
+    print ("Dump modules to json")
     with open('modules.json', 'w') as outfile:
         json.dump(modules, outfile)
 
@@ -109,7 +110,7 @@ def main():
     modules = getModule(autologin)
     if reloadM:
         WritejsonModule(modules)
-    sys.exit(0)
+    
     getSpace(autologin, modules, freeModule)
 
 if __name__ == "__main__":
