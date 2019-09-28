@@ -5,6 +5,8 @@ import sys
 import argparse
 import requests
 import json
+import time
+from datetime import date
 
 def createConfig():
     try:
@@ -39,13 +41,12 @@ def getFree(autologin, url):
         return (len(module))
 
 def displayOneModule(module):
-    print("%s %s %d/%d" % (module["title"], module["credit"], module["student"],  module["max_student"]))
+    print("[%s] %s -> %s credits [%d/%d]" % (module["end_register"], module["title"], module["credit"], module["student"],  module["max_student"]))
 
 def getSpace(autologin, data, free):
     newdata = {}
     newdata['module'] = []
     for module in data['module']:
-    #for module in modules:
         base = autologin + "/module/2019/" +  module['codebase']
         urlfree = base + "/registered/?format=json"
         url = base + "/?format=json"
@@ -56,23 +57,30 @@ def getSpace(autologin, data, free):
         else:
             modulejson = response.json()
             module["student"] = getFree(autologin, urlfree)
+            module["end_register"] = modulejson["end_register"]
             maxValue = modulejson["max_ins"]
             if maxValue is None:
                 maxValue = 0
             else :
                 maxValue = int(maxValue)
             module["max_student"] = maxValue
-            if free:
-                if module["student"] <  module["max_student"] and module["student"] != 0 :
-                    #add
-                    #newdata.append(module)
+            today = date.today()
+            date1 = today.strftime("%Y-%m-%d")
+            newdate1 = time.strptime(date1, "%Y-%m-%d")
+            newdate2 = time.strptime(module["end_register"], "%Y-%m-%d")
+
+            if newdate2 > newdate1:
+                if free:
+                    if module["student"] <  module["max_student"] and module["student"] != 0 :
+                        #add
+                        newdata['module'].append(module)
+                        displayOneModule(module)
+                        #print(module)
+                else:
+                    newdata['module'].append(module)
                     displayOneModule(module)
+                    #add
                     #print(module)
-            else:
-                #newdata.append(module)
-                displayOneModule(module)
-                #add
-                #print(module)
     return (newdata)
 
 def getModule(autologin):
@@ -99,12 +107,11 @@ def getModule(autologin):
                 'credit' : module["credits"],
                 'begin' : module["begin"],
                 'end' : module["end"],
+                'end_register' : "",
                 'open' : module["open"],
                 'student' : 0,
                 'max_student' : 0
                 })
-
-
             #codeinstance = module["code"] + "/" + module["codeinstance"]
             #moduleslist.append([codeinstance, module["title"] , module["credits"]])
             #print (module["code"] + "/" + module["codeinstance"])
@@ -149,6 +156,6 @@ def main():
     else:
         modules = loadModule()
     modules = getSpace(autologin, modules, freeModule)
-    #displayModuleFound(modules)
+    WritejsonModule(modules)
 if __name__ == "__main__":
     main()
