@@ -65,6 +65,8 @@ def getSpace(autologin, modules, free):
 
 def getModule(autologin):
     moduleslist = []
+    data = {}
+    data['module'] = []
     try:
         # If the response was successful, no Exception will be raised
         response = requests.get(autologin + "/course/filter?format=json&preload=1&location%5B%5D=FR&location%5B%5D=FR%2FPAR&course%5B%5D=master%2Fclassic&scolaryear%5B%5D=2019")
@@ -76,20 +78,41 @@ def getModule(autologin):
         print ("load %d modules" %len(modules["items"]))
 
         for module in modules["items"]:
-            codeinstance = module["code"] + "/" + module["codeinstance"]
-            moduleslist.append([codeinstance, module["title"] , module["credits"]])
+
+            data['module'].append({
+                'code':  module["codeinstance"],
+                'codeinstance': module["codeinstance"],
+                'codebase' : module["code"] + "/" + module["codeinstance"],
+                'credit' : module["credits"],
+                'begin' : module["begin"],
+                'end' : module["end"],
+                'open' : module["open"],
+                'student' : 0,
+                'max_student' : 0
+                })
+
+
+            #codeinstance = module["code"] + "/" + module["codeinstance"]
+            #moduleslist.append([codeinstance, module["title"] , module["credits"]])
             #print (module["code"] + "/" + module["codeinstance"])
-        return moduleslist
+        return data
 
 
 def WritejsonModule(modules):
     print ("Dump modules to json")
-    with open('modules.json', 'w') as outfile:
+    with open('modules.json', 'w+') as outfile:
         json.dump(modules, outfile)
 
 def loadModule():
-    return (NULL)
-    
+    with open('modules.json') as json_file:
+    data = json.load(json_file)
+    for p in data['people']:
+        print('Name: ' + p['name'])
+        print('Website: ' + p['website'])
+        print('From: ' + p['from'])
+        print('')
+
+
 def main():
     freeModule = 0
     reloadM = 0
@@ -115,7 +138,8 @@ def main():
         modules = getModule(autologin)
         WritejsonModule(modules)
     else:
-        modules = loadModule():
+        modules = loadModule()
+    sys.exit(0)
     getSpace(autologin, modules, freeModule)
 
 if __name__ == "__main__":
