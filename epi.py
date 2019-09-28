@@ -28,16 +28,39 @@ def checkConfig():
     return autologin
 
 
-def getSpace(autologin, modules):
+def getFree(autologin, url):
+    try:
+        response = requests.get(url)
+    except Exception as err:
+        print(f'Other error occurred: {err}')  # Python 3.6
+    else:
+        module = response.json()
+        return (len(module))
+
+def getSpace(autologin, modules, free):
     for module in modules:
-        url = autologin + "/module/2019/" + module[0] + "/?format=json"
+        base = autologin + "/module/2019/" + module[0]
+        urlfree = base + "/registered/?format=json"
+        url = base + "/?format=json"
         try:
             response = requests.get(url)
         except Exception as err:
             print(f'Other error occurred: {err}')  # Python 3.6
         else:
             modulejson = response.json()
-            print (module[0] + " " + module[1] + " %s " % modulejson["max_ins"])
+            module.append(getFree(autologin, urlfree))
+            maxValue = modulejson["max_ins"]
+            if maxValue is None:
+                maxValue = 0
+            else :
+                maxValue = int(maxValue)
+            module.append(maxValue)
+
+            if free:
+                if module[3] <  module[4]:
+                    print(module)
+            else:
+                print(module)
 
 def getModule(autologin):
     moduleslist = []
@@ -58,17 +81,21 @@ def getModule(autologin):
         return moduleslist
 
 def main():
+    freeModule = 0
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", action="store_true", default=False)
+    parser.add_argument("-f", "--free", action="store_true", default=False)
     try:
         args = parser.parse_args()
     except:
         sys.exit(0)
+    if args.free:
+        freeModule = 1
     if args.config:
         autologin = createConfig()
     else:
         autologin = checkConfig()
     modules = getModule(autologin)
-    getSpace(autologin, modules)
+    getSpace(autologin, modules, freeModule)
 if __name__ == "__main__":
     main()
