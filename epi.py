@@ -106,11 +106,7 @@ def WritejsonModule(modules):
 def loadModule():
     with open('modules.json') as json_file:
     data = json.load(json_file)
-    for p in data['people']:
-        print('Name: ' + p['name'])
-        print('Website: ' + p['website'])
-        print('From: ' + p['from'])
-        print('')
+    return data
 
 
 def main():
@@ -139,7 +135,6 @@ def main():
         WritejsonModule(modules)
     else:
         modules = loadModule()
-    sys.exit(0)
     getSpace(autologin, modules, freeModule)
 
 if __name__ == "__main__":
