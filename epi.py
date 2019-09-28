@@ -87,6 +87,9 @@ def WritejsonModule(modules):
     with open('modules.json', 'w') as outfile:
         json.dump(modules, outfile)
 
+def loadModule():
+    return (NULL)
+    
 def main():
     freeModule = 0
     reloadM = 0
@@ -107,10 +110,12 @@ def main():
         autologin = createConfig()
     else:
         autologin = checkConfig()
-    modules = getModule(autologin)
+
     if reloadM:
+        modules = getModule(autologin)
         WritejsonModule(modules)
-    
+    else:
+        modules = loadModule():
     getSpace(autologin, modules, freeModule)
 
 if __name__ == "__main__":
