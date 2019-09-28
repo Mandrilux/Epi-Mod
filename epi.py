@@ -38,9 +38,13 @@ def getFree(autologin, url):
         module = response.json()
         return (len(module))
 
+def displayOneModule(module):
+    print("%s %s %d/%d" % (module["title"], module["credit"], module["student"],  module["max_student"]))
+
 def getSpace(autologin, data, free):
+    newdata = {}
+    newdata['module'] = []
     for module in data['module']:
-        print(module)
     #for module in modules:
         base = autologin + "/module/2019/" +  module['codebase']
         urlfree = base + "/registered/?format=json"
@@ -58,13 +62,18 @@ def getSpace(autologin, data, free):
             else :
                 maxValue = int(maxValue)
             module["max_student"] = maxValue
-            #module.append(maxValue)
-            print(module)
             if free:
-                if module["student"] <  module["max_student"]:
-                    print(module)
+                if module["student"] <  module["max_student"] and module["student"] != 0 :
+                    #add
+                    #newdata.append(module)
+                    displayOneModule(module)
+                    #print(module)
             else:
-                print(module)
+                #newdata.append(module)
+                displayOneModule(module)
+                #add
+                #print(module)
+    return (newdata)
 
 def getModule(autologin):
     #moduleslist = []
@@ -83,6 +92,7 @@ def getModule(autologin):
         for module in modules["items"]:
 
             data['module'].append({
+                'title': module["title"],
                 'code':  module["codeinstance"],
                 'codeinstance': module["codeinstance"],
                 'codebase' : module["code"] + "/" + module["codeinstance"],
@@ -138,7 +148,7 @@ def main():
         WritejsonModule(modules)
     else:
         modules = loadModule()
-    getSpace(autologin, modules, freeModule)
-
+    modules = getSpace(autologin, modules, freeModule)
+    #displayModuleFound(modules)
 if __name__ == "__main__":
     main()
