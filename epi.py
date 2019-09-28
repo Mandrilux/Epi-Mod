@@ -4,6 +4,7 @@
 import sys
 import argparse
 import requests
+import json
 
 def createConfig():
     try:
@@ -80,6 +81,11 @@ def getModule(autologin):
             #print (module["code"] + "/" + module["codeinstance"])
         return moduleslist
 
+
+def WritejsonModule(modules):
+    with open('modules.json', 'w') as outfile:
+        json.dump(modules, outfile)
+
 def main():
     freeModule = 0
     parser = argparse.ArgumentParser()
@@ -96,6 +102,8 @@ def main():
     else:
         autologin = checkConfig()
     modules = getModule(autologin)
+    WritejsonModule(modules)
     getSpace(autologin, modules, freeModule)
+
 if __name__ == "__main__":
     main()
