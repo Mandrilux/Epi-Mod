@@ -51,7 +51,7 @@ def getSpace(autologin, data, free):
             print(f'Other error occurred: {err}')  # Python 3.6
         else:
             modulejson = response.json()
-            module["max_student"] = getFree(autologin, urlfree)
+            module["student"] = getFree(autologin, urlfree)
             maxValue = modulejson["max_ins"]
             if maxValue is None:
                 maxValue = 0
@@ -59,7 +59,7 @@ def getSpace(autologin, data, free):
                 maxValue = int(maxValue)
             module["max_student"] = maxValue
             #module.append(maxValue)
-
+            print(module)
             if free:
                 if module["student"] <  module["max_student"]:
                     print(module)
