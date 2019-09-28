@@ -88,21 +88,28 @@ def WritejsonModule(modules):
 
 def main():
     freeModule = 0
+    reloadM = 0
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", action="store_true", default=False)
     parser.add_argument("-f", "--free", action="store_true", default=False)
+    parser.add_argument("-r", "--reload", action="store_true", default=False)
     try:
         args = parser.parse_args()
     except:
         sys.exit(0)
     if args.free:
         freeModule = 1
+    if args.reload:
+        reloadM = 1
     if args.config:
         autologin = createConfig()
     else:
         autologin = checkConfig()
     modules = getModule(autologin)
-    WritejsonModule(modules)
+    if reloadM:
+        WritejsonModule(modules)
+    sys.exit(0)
     getSpace(autologin, modules, freeModule)
 
 if __name__ == "__main__":
